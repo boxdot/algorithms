@@ -1,9 +1,8 @@
 #include <vector>
-
 #include <random>
-#include <gtest/gtest.h>
 
-#include <iostream>
+#define CATCH_CONFIG_MAIN
+#include "catch/catch.hpp"
 
 
 template<typename T>
@@ -28,21 +27,21 @@ bool is_sorted(std::vector<T>& ar) {
 }
 
 
-TEST(InsertionSort, Empty) {
+TEST_CASE("Sort empty vector", "[insertion_sort]") {
     std::vector<int> ar;
     insertion_sort(ar);
-    ASSERT_TRUE(ar == (std::vector<int>{}));
+    REQUIRE(ar == (std::vector<int>{}));
 }
 
 
-TEST(InsertionSort, Simple) {
+TEST_CASE("Sort a small vector", "[insertion_sort]") {
     std::vector<int> ar{5, 2, 4, 6, 1, 3};
     insertion_sort(ar);
-    ASSERT_TRUE(ar == (std::vector<int>{1, 2, 3, 4, 5, 6}));
+    REQUIRE(ar == (std::vector<int>{1, 2, 3, 4, 5, 6}));
 }
 
 
-TEST(InsertionSort, Trivial) {
+TEST_CASE("Sort several sorted vectors", "[insertion_sort]") {
     for (int n = 10; n <= 1000; n *= 10) {
         std::vector<int> ar(n);
         for (int i = 0; i < n; ++i) {
@@ -50,7 +49,7 @@ TEST(InsertionSort, Trivial) {
         }
         auto copy_ar = ar;
         insertion_sort(ar);
-        ASSERT_TRUE(ar == copy_ar);
+        REQUIRE(ar == copy_ar);
     }
 }
 
@@ -68,17 +67,10 @@ std::vector<int> random_vector(std::size_t size, int from, int to) {
 }
 
 
-TEST(InsertionSort, Random) {
+TEST_CASE("Sort several random vectors", "[insertion_sort]") {
     for (int n = 10; n <= 1000; n *= 10) {
         std::vector<int> ar = random_vector(n, 0, n/2);
         insertion_sort(ar);
-        ASSERT_TRUE(is_sorted(ar));
+        REQUIRE(is_sorted(ar));
     }
-}
-
-
-int main(int argc, char *argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
 }
