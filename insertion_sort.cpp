@@ -1,5 +1,6 @@
 #include <vector>
-#include <random>
+
+#include "tools/sort.hpp"
 
 #define CATCH_CONFIG_MAIN
 #include "catch/catch.hpp"
@@ -16,14 +17,6 @@ void insertion_sort(std::vector<T>& ar) {
         }
         ar[j + 1] = key;
     }
-}
-
-
-template <typename T>
-bool is_sorted(std::vector<T>& ar) {
-    std::vector<T> ar_copy = ar;
-    std::sort(ar_copy.begin(), ar_copy.end());
-    return ar_copy == ar;
 }
 
 
@@ -51,19 +44,6 @@ TEST_CASE("Sort several sorted vectors", "[insertion_sort]") {
         insertion_sort(ar);
         REQUIRE(ar == copy_ar);
     }
-}
-
-
-std::vector<int> random_vector(std::size_t size, int from, int to) {
-    std::default_random_engine engine;
-    std::uniform_int_distribution<int> randint(from, to);
-
-    std::vector<int> vec(size);
-    while (size > 0) {
-        vec[size - 1] = randint(engine);
-        size--;
-    }
-    return vec;
 }
 
 
