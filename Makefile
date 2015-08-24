@@ -1,5 +1,4 @@
-CXXFLAGS=-std=c++1y -Igoogletest/include -Wall -O0 -g
-LDFLAGS=-Lgoogletest -lgtest
+CXXFLAGS=-std=c++1y -Wall -O0 -g
 
 
 EXECUTABLES = \

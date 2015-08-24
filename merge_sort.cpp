@@ -1,9 +1,8 @@
 #include <vector>
 
 #include "tools/sort.hpp"
-
 #define CATCH_CONFIG_MAIN
-#include "catch/catch.hpp"
+#include "tools/catch.hpp"
 
 
 template <typename T>
