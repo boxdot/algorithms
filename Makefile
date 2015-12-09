@@ -3,7 +3,8 @@ CXXFLAGS=-std=c++1y -Wall -O0 -g
 
 EXECUTABLES = \
 	insertion_sort \
-	merge_sort
+	merge_sort \
+	next_permutation
 
 
 all: $(EXECUTABLES)

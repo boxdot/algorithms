@@ -1,3 +1,6 @@
 *.pyc
 *.dSYM
 insertion_sort
+next_permutation
+merge_sort
+.DS_Store
