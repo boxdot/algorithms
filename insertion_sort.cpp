@@ -1,7 +1,6 @@
 #include <vector>
 
 #include "tools/sort.hpp"
-#define CATCH_CONFIG_MAIN
 #include "tools/catch.hpp"
 
 

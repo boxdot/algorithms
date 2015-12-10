@@ -1,6 +1,8 @@
 *.pyc
 *.dSYM
+*.o
 insertion_sort
 next_permutation
 merge_sort
+johnson_trotter
 .DS_Store
