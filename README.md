@@ -1,7 +1,8 @@
 ## Next time...
 
-* https://en.wikipedia.org/wiki/Steinhaus–Johnson–Trotter_algorithm
+?
 
 ## Done
 
+* Steinhaus–Johnson–Trotter (naive)
 * Multiset next permutation algorithm
