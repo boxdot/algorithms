@@ -5,4 +5,5 @@ insertion_sort
 next_permutation
 merge_sort
 johnson_trotter
+radix_sort
 .DS_Store

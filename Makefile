@@ -6,7 +6,8 @@ EXECUTABLES = \
 	insertion_sort \
 	merge_sort \
 	next_permutation \
-	johnson_trotter
+	johnson_trotter \
+	radix_sort
 
 
 all: test_main.o $(EXECUTABLES)
