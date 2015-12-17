@@ -7,7 +7,8 @@ EXECUTABLES = \
 	merge_sort \
 	next_permutation \
 	johnson_trotter \
-	radix_sort
+	radix_sort \
+	3sum
 
 
 all: test_main.o $(EXECUTABLES)

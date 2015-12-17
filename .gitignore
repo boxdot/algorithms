@@ -6,4 +6,5 @@ next_permutation
 merge_sort
 johnson_trotter
 radix_sort
+3sum
 .DS_Store

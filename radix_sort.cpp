@@ -4,7 +4,7 @@
 
 // type contained in Iter is assumed to be an integral number type
 template<typename Iter>
-void radix_sort(Iter begin, Iter end, size_t bit) 
+void radix_sort(Iter begin, Iter end, size_t bit)
 {
     if (begin == end){
         return;
@@ -70,7 +70,8 @@ TEST_CASE("Sort several random vectors", "[radix_sort]") {
 }
 
 
-
+// Works only for vector with positive elements. However, it is possible
+// without loss of generality to reduce to this case.
 std::pair<int, int> find_with_sum(std::vector<int> v, int sum) {
     radix_sort(v);
     auto left = v.begin();
