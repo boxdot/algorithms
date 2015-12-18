@@ -8,7 +8,8 @@ EXECUTABLES = \
 	next_permutation \
 	johnson_trotter \
 	radix_sort \
-	3sum
+	3sum \
+	ecdh
 
 
 all: test_main.o $(EXECUTABLES)
