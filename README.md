@@ -1,5 +1,6 @@
 ## Next time...
 
+* Coin change problem
 * k-SUM
 * Linear embedding problem ?
 
