@@ -114,7 +114,8 @@ public:
         F x() const { assert(!identity_); return x_; };
         F y() const { assert(!identity_); return y_; };
 
-        // group law
+        // Group Law
+        // Cf. http://wstein.org/edu/fall05/168/notes/2005-10-03/2005-10-03.pdf
         const Element operator+(const Element& other) const {
             assert(*curve_ == *(other.curve_));
 
