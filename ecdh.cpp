@@ -45,45 +45,32 @@ TEST_CASE("Check arithmetic of F<p> elements", "[finite field]") {
     REQUIRE(F7(4) / F7(3) == F7(-1));
 }
 
-
-template<typename F>
-std::string to_string(const typename EllipticCurve<F>::Element& p)
-{
-    if (p.is_identity()) {
-        return std::string("o");
-    }
-    std::stringstream ss;
-    ss << "(" << p.x() << ", " << p.y() << ")";
-    return ss.str();
-}
-
-
 TEST_CASE("Compute number of points on y^2 = x^3 + ax + b over F61 and F71",
     "[elliptic curve]")
 {
     using F61 = PF<61>;
-    EllipticCurve<F61> E(-1, 0);
-    REQUIRE(E.size<F61>() == 72);
+    using E61 = EllCurve<F61, -1, 0>;
+    REQUIRE(E61::size() == 72);
 
     using F71 = PF<71>;
-    EllipticCurve<F71> E2(-1, 0);
-    REQUIRE(E2.size<F71>() == 72);
+    using E71 = EllCurve<F71, -1, 0>;
+    REQUIRE(E71::size() == 72);
 }
 
 TEST_CASE("Arithmetic on on y^2 = x^3 + ax + b over F7", "[elliptic curve]")
 {
     using F = PF<7>;
-    EllipticCurve<F> E(-1, 0);
+    using E = EllCurve<F, -1, 0>;
 
-    auto o = E();
+    auto O = E::Point();
     for (int x = 0; x < F::size; ++x) {
         for (int y = 0; y < F::size; ++y) {
-            if (E.contains(x, y)) {
-                auto p = E(x, y);
-                REQUIRE(p - p == o);
-                REQUIRE(p + o == p);
-                REQUIRE(p - o == p);
-                REQUIRE(o - p == -p);
+            if (E::contains(x, y)) {
+                auto P = E::Point(x, y);
+                REQUIRE(P - P == O);
+                REQUIRE(P + O == P);
+                REQUIRE(P - O == P);
+                REQUIRE(O - P == -P);
             }
         }
     }
