@@ -65,6 +65,7 @@ constexpr PF<p> operator+(const PF<p> x, const PF<p> y) {
     return PF<p>(x() + y());
 }
 
+// Z-module structure
 template<int p>
 constexpr PF<p> operator*(int a, const PF<p> y) {
     return PF<p>(a*y());
@@ -91,13 +92,14 @@ constexpr bool operator==(const PF<p> x, const PF<p> y) {
 }
 
 template<int p>
-constexpr bool operator!=(const PF<p> x, const PF<p> y) {
-    return x() != y();
-}
-
-template<int p>
 std::ostream& operator<<(std::ostream& os, const PF<p> x) {
     return os << x();
+}
+
+// generic neq
+template<typename T>
+constexpr bool operator!=(const T& a, const T& b) {
+    return !(a == b);
 }
 
 //
@@ -105,7 +107,7 @@ std::ostream& operator<<(std::ostream& os, const PF<p> x) {
 //
 
 template<typename F /* field of char != 2, 3 */, int a, int b>
-class EllCurve {
+class EllipticCurve {
 public:
     class Point {
     public:
@@ -124,10 +126,6 @@ public:
             return (identity_ && p.identity_ )|| (x_ == p.x_ && y_ == p.y_);
         }
 
-        bool operator!=(const Point& p) const {
-            return !(*this == p);
-        }
-
         // Group Law
         const Point operator+(const Point& p) const  {
             // trivial
@@ -144,7 +142,7 @@ public:
 
             F lambda =
                 x_ == p.x_ && y_ == p.y_
-                ? (F(3)*x_*x_ + F(a))/(F(2)*y_)
+                ? (3*x_*x_ + F(a))/(2*y_)
                 : (y_ - p.y_)/(x_ - p.x_);
 
             auto x3 = lambda * lambda - x_ - p.x_;

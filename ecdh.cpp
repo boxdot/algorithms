@@ -49,18 +49,18 @@ TEST_CASE("Compute number of points on y^2 = x^3 + ax + b over F61 and F71",
     "[elliptic curve]")
 {
     using F61 = PF<61>;
-    using E61 = EllCurve<F61, -1, 0>;
+    using E61 = EllipticCurve<F61, -1, 0>;
     REQUIRE(E61::size() == 72);
 
     using F71 = PF<71>;
-    using E71 = EllCurve<F71, -1, 0>;
+    using E71 = EllipticCurve<F71, -1, 0>;
     REQUIRE(E71::size() == 72);
 }
 
 TEST_CASE("Arithmetic on on y^2 = x^3 + ax + b over F7", "[elliptic curve]")
 {
     using F = PF<7>;
-    using E = EllCurve<F, -1, 0>;
+    using E = EllipticCurve<F, -1, 0>;
 
     auto O = E::Point();
     for (int x = 0; x < F::size; ++x) {
