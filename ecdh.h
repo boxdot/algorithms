@@ -17,13 +17,13 @@ constexpr int64_t pow(int64_t base, int exp) {
 }
 
 // inverse mod n
-constexpr int mod_inverse(int a, int n) {
+constexpr int64_t mod_inverse(int64_t a, int64_t n) {
     if (n == 1) {
         return 1;
     }
 
-    int t = 0, q = 0;
-    int x0 = 0, x1 = 1;
+    int64_t t = 0, q = 0;
+    int64_t x0 = 0, x1 = 1;
 
     while (a > 1) {
         q = a / n;
@@ -37,16 +37,15 @@ constexpr int mod_inverse(int a, int n) {
 // Finite prime field (of characteristic p)
 //
 
-template<int p /* prime */>
+template<int64_t p /* prime */>
 class PF {
 public:
-    static constexpr int characteristic = p;
-    static constexpr int size = p;
+    static constexpr int64_t characteristic = p;
+    static constexpr int64_t size = p;
 
-    constexpr PF(int a) : a_(a % p + p * (a % p < 0)) {}
+    constexpr PF(int64_t a) : a_(a % p + p * (a % p < 0)) {}
 
-    constexpr int operator()() const { return a_; }
-    // constexpr operator int() const { return a_; }
+    constexpr int64_t operator()() const { return a_; }
 
     constexpr PF<p> inverse() const {
         assert(a_ != 0);
@@ -56,42 +55,42 @@ public:
     constexpr PF<p> operator-() const { return -a_; }
 
 private:
-    const int a_;
+    const int64_t a_;
 };
 
 
-template<int p>
+template<int64_t p>
 constexpr PF<p> operator+(const PF<p> x, const PF<p> y) {
     return PF<p>(x() + y());
 }
 
 // Z-module structure
-template<int p>
-constexpr PF<p> operator*(int a, const PF<p> y) {
+template<int64_t p>
+constexpr PF<p> operator*(int64_t a, const PF<p> y) {
     return PF<p>(a*y());
 }
 
-template<int p>
+template<int64_t p>
 constexpr PF<p> operator-(const PF<p> x, const PF<p> y) {
     return PF<p>(x() - y());
 }
 
-template<int p>
+template<int64_t p>
 constexpr PF<p> operator*(const PF<p> x, const PF<p> y) {
     return PF<p>(x() * y());
 }
 
-template<int p>
+template<int64_t p>
 constexpr PF<p> operator/(const PF<p> x, const PF<p> y) {
     return PF<p>(x * y.inverse());
 }
 
-template<int p>
+template<int64_t p>
 constexpr bool operator==(const PF<p> x, const PF<p> y) {
     return x() == y();
 }
 
-template<int p>
+template<int64_t p>
 std::ostream& operator<<(std::ostream& os, const PF<p> x) {
     return os << x();
 }
@@ -106,7 +105,7 @@ constexpr bool operator!=(const T& a, const T& b) {
 // Elliptic curve
 //
 
-template<typename F /* field of char != 2, 3 */, int a, int b>
+template<typename F /* field of char != 2, 3 */, int64_t a, int64_t b>
 class EllipticCurve {
 public:
     class Point {
@@ -159,8 +158,15 @@ public:
             return Point(x_, -y_);
         }
 
+        // difference
         const Point operator-(const Point& p) const {
             return (*this) + (-p);
+        }
+
+        // Z-module structure
+        // TODO: This can be done better.
+        friend const Point operator*(uint64_t n, const Point& p) {
+            return mult(n, p, p);
         }
 
         // output
@@ -172,6 +178,15 @@ public:
         }
 
     private:
+        friend const Point mult(uint64_t n, const Point& p, const Point& res) {
+            if (n == 0) {
+                return Point();
+            } else if (n == 1) {
+                return res;
+            }
+            return mult(n - 1, p, res + p);
+        }
+
         const bool identity_;
         const F x_, y_;
     };
@@ -184,12 +199,13 @@ public:
         return y*y == x*x*x + a*x + F(b);
     }
 
-    // number of points
+    // number of points (or order of the group E(F))
+    // brute force, TODO: Replace by Schoof's algorithm
     template<typename L /* finite extension of F */ = F>
     static size_t size() {
         size_t count = 1;  // first point is the infinity
-        for (int x = 0; x < L::size; ++x) {
-            for (int y = 0; y < L::size; ++y) {
+        for (int64_t x = 0; x < L::size; ++x) {
+            for (int64_t y = 0; y < L::size; ++y) {
                 if (contains(x, y)) {
                     count += 1;
                 }

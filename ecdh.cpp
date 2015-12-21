@@ -4,7 +4,85 @@
 #include <ostream>
 #include <assert.h>
 #include <iostream>
+#include <random>
 
+// Domain parameters of cryptographic system
+
+template<int p, int a, int b>
+struct DomainParams {
+    using Fp = PF<p>;
+    using E = EllipticCurve<Fp, a, b>;
+    using Point = typename E::Point;
+
+    const Point G;     // generator or base point
+    const uint64_t n;  // order of G i.e. smallest positive n s.t. nG = O
+    const uint64_t h;  // h = 1/n * #E(Fp), positive integer by Lagrange
+                       // should be small, i.e. h < 5, preferably, h = 1
+};
+
+// Private key
+
+template<typename DomainParams>
+struct PrivateKey {
+    explicit PrivateKey(const DomainParams& params) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> distr(1, params.n - 1);
+        d = distr(gen);
+    }
+
+    int d;  // integer from [1, n - 1], where n is from params
+};
+
+// Public key
+
+template<typename DomainParams>
+struct PublicKey {
+    using Point = typename DomainParams::E::Point;
+
+    PublicKey(const DomainParams& params, const PrivateKey<DomainParams>& key)
+        : Q(key.d * params.G) {}
+
+    const Point Q;  // Q = d*G, where G is from params, and d
+                    // is the corresponding private key
+};
+
+
+TEST_CASE("ECDH on Curve25519 over F71", "[ECDH]") {
+    // I use F71 since I don't have arithmetic on large integers.
+    // TODO: Use prime 2^255 − 19
+    using Curve25519 = DomainParams<71, 486662, 1>;
+    using E = Curve25519::E;
+
+    Curve25519 params = {
+        E::Point(7, 16),  // generator
+        74,               // of order 74 = #E(F71)
+        1,                // since order of E(F71) = 74
+    };
+
+    // Alice Key
+    PrivateKey<Curve25519> alice_priv(params);
+    PublicKey<Curve25519> alice_pub(params, alice_priv);
+
+    // Bob Key
+    PrivateKey<Curve25519> bob_priv(params);
+    PublicKey<Curve25519> bob_pub(params, bob_priv);
+
+    // Exchange
+
+    // Alice computes
+    auto Pa = alice_priv.d * bob_pub.Q;
+
+    // Bob computes
+    auto Pb = bob_priv.d * alice_pub.Q;
+
+    // Shared secret is Pa == Pb (first coordinate is enough)
+    REQUIRE(Pa == Pb);
+}
+
+//
+//  Other tests
+//
 
 TEST_CASE("Value of negative int is positive", "[finite field]") {
     using F7 = PF<7>;
