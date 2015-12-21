@@ -1,5 +1,6 @@
 ## Next time...
 
+* Benchmark multiplication algorithms of Karatsuba, Toom–Cook and Schönhage–Strassen on 256-bit integers (char[32]).
 * Coin change problem
 * k-SUM
 * Linear embedding problem ?
