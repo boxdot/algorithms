@@ -9,7 +9,8 @@ EXECUTABLES = \
 	johnson_trotter \
 	radix_sort \
 	3sum \
-	ecdh
+	ecdh \
+	cyk
 
 
 all: test_main.o $(EXECUTABLES)
