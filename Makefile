@@ -10,7 +10,7 @@ EXECUTABLES = \
 	radix_sort \
 	3sum \
 	ecdh \
-	cyk
+	cnf
 
 
 all: test_main.o $(EXECUTABLES)
