@@ -10,7 +10,8 @@ EXECUTABLES = \
 	radix_sort \
 	3sum \
 	ecdh \
-	cnf
+	cnf \
+	intersection
 
 
 all: test_main.o $(EXECUTABLES)
