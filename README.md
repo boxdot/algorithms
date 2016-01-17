@@ -8,6 +8,8 @@
 
 ## Done
 
+* Kd-Tree (k = 2)
+* 1-dim Range Searching
 * Intersection of Ray with Plane and Triangle
 * Conversion of grammar to CNF
 * ECDH on Curve25519 over F71

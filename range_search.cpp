@@ -3,6 +3,9 @@
 #include <deque>
 #include <vector>
 
+#include "tools/print.hpp"
+#include <iostream>
+
 //
 // 1-Dimensional Range Searching
 //
@@ -93,6 +96,114 @@ std::vector<T> oned_range_query(Tree<T> t, T x, T y) {
     return std::vector<T>(res.begin(), res.end());
 }
 
+//
+// kd-Tree (k = 2)
+//
+
+struct Point2D {
+    float x, y;
+    bool operator==(const Point2D& pt) const {
+        return x == pt.x && y == pt.y;
+    }
+};
+
+std::ostream& operator<<(std::ostream& os, const Point2D& pt) {
+    return os << "(" << pt.x << ", " << pt.y << ")";
+}
+
+//
+// Internal nodes are splitting points. If the depth is even, then the y
+// coordinate of the splitting point is 0 and the x coordinates defines a right
+// half plane s.t. all points in the right subtree lie on this plane. (Note
+// that the line defining the half plane also belongs to it.) Similarly, if the
+// depth is odd, then the x coordinate of the splitting point is zero, and the
+// y coordinate defines a lower half plane s.t. all points in the right subtree
+// lie on this plane. The leaves are points.
+//
+class KDTree : public Tree<Point2D> {
+    KDTree() : Tree() {}
+    KDTree(Point2D value) : Tree(value) {}
+    KDTree(Point2D value, const KDTree& left, const KDTree& right)
+        : Tree(value, left, right) {}
+
+public:
+    // Construct a kd-tree from a set of points.
+    static KDTree build(std::initializer_list<Point2D> points) {
+        std::vector<Point2D> points_x(points);
+        std::vector<Point2D> points_y(points);
+        std::sort(points_x.begin(), points_x.end(),
+            [](const auto& p, const auto& q) {
+                return p.x < q.x;
+            });
+        std::sort(points_y.begin(), points_y.end(),
+            [](const auto& p, const auto& q) {
+                return p.y < q.y;
+            });
+
+        return build_(points_x, points_y, 0);
+    }
+
+private:
+    // The set of points is described by two sets: points_x and points_y. The
+    // former consists of all points sorted by x coordinate and the latter by y
+    // coordinate. This allows to efficiently compute the median along x resp.
+    // y axis.
+    static KDTree build_(
+        std::vector<Point2D> points_x,
+        std::vector<Point2D> points_y,
+        size_t depth)
+    {
+        assert(points_x.size() == points_y.size());
+
+        if (points_x.empty()) {
+            return KDTree();
+        }
+
+        if (points_x.size() == 1) {
+            return KDTree(points_x[0]);
+        }
+
+        Point2D split_pt{0, 0};
+        std::vector<Point2D> left_x, left_y, right_x, right_y;
+
+        size_t median_idx = points_x.size() / 2;
+        if (depth % 2 == 0) {
+            split_pt.x = points_x[median_idx].x;
+            left_x = std::vector<Point2D>(
+                points_x.begin(), points_x.begin() + median_idx);
+            right_x = std::vector<Point2D>(
+                points_x.begin() + median_idx, points_x.end());
+            for (const auto& pt : points_y) {
+                if (pt.x < split_pt.x) {
+                    left_y.push_back(pt);
+                } else {
+                    right_y.push_back(pt);
+                }
+            }
+        } else {
+            split_pt.y = points_y[median_idx].y;
+            left_y = std::vector<Point2D>(
+                points_y.begin(), points_y.begin() + median_idx);
+            right_y = std::vector<Point2D>(
+                points_y.begin() + median_idx, points_y.end());
+            for (const auto& pt : points_x) {
+                if (pt.y < split_pt.y) {
+                    left_x.push_back(pt);
+                } else {
+                    right_x.push_back(pt);
+                }
+            }
+        }
+
+        KDTree left = build_(left_x, left_y, depth + 1);
+        KDTree right = build_(right_x, right_y, depth + 1);
+        return KDTree(split_pt, left, right);
+    }
+};
+
+//
+// Tests
+//
 
 using T = Tree<int>;
 T test_tree() {
@@ -122,4 +233,20 @@ TEST_CASE("Query for a 1-dim range", "[range search]") {
     REQUIRE(
         oned_range_query(test_tree(), 18, 77) ==
         (std::vector<int>{19, 23, 30, 37, 49, 59, 62, 70}));
+}
+
+TEST_CASE("Build a simple KD-Tree", "[kd-tree]") {
+    auto t = KDTree::build({
+        {0, 0}, {1, 1}, {-1, 2}
+    });
+
+    // Result:
+    //          0
+    // (-1 2)         1
+    //          (0, 0) (1, 1)
+    REQUIRE(t.root() == (Point2D{0, 0}));
+    REQUIRE(t.left().root() == (Point2D{-1, 2}));         // leaf
+    REQUIRE(t.right().root() == (Point2D{0, 1}));
+    REQUIRE(t.right().left().root() == (Point2D{0, 0}));  // leaf
+    REQUIRE(t.right().right().root() == (Point2D{1, 1})); // leaf
 }
