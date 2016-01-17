@@ -18,3 +18,4 @@
 * Inplace binary MSD radix sort
 * Johnson–Trotter
 * Multiset next permutation algorithm
+* Sorting (insertion sort, merge sort)

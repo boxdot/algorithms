@@ -1,11 +1,11 @@
 *.pyc
 *.dSYM
 *.o
-insertion_sort
+sorting
+range_search
+intersection
 next_permutation
-merge_sort
 johnson_trotter
-radix_sort
 3sum
 ecdh
 cnf

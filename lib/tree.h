@@ -2,9 +2,12 @@
 
 #include <memory>
 
+//
 // Persitent Binary Tree
-// TODO: add full address
-// cf. bartoszmilewski.com
+//
+// Cf. Functional Data Structures in C++: Trees
+// http://bartoszmilewski.com/2013/11/25/functional-data-structures-in-c-trees/
+//
 template<typename T>
 class Tree {
     struct Node {

@@ -3,11 +3,9 @@ CXXFLAGS=-std=c++1y -Wall -O0 -g
 LDFLAGS=test_main.o
 
 EXECUTABLES = \
-	insertion_sort \
-	merge_sort \
+	sorting \
 	next_permutation \
 	johnson_trotter \
-	radix_sort \
 	3sum \
 	ecdh \
 	cnf \
