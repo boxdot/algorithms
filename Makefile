@@ -11,7 +11,8 @@ EXECUTABLES = \
 	3sum \
 	ecdh \
 	cnf \
-	intersection
+	intersection \
+	range_search
 
 
 all: test_main.o $(EXECUTABLES)
