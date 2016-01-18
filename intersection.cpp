@@ -121,6 +121,8 @@ float ray_triangle_intersection(
 // bounds[1] is the maximal corner. The ray has origin at P0 and direction
 // -dir_inv. The inversed direction allows to make the algorithm faster.
 //
+// Cf. http://people.csail.mit.edu/amy/papers/box-jgt.pdf
+//
 bool ray_box_intersection(
     const Vector3D& P0, const Vector3D& dir_inv,
     const Vector3D bounds[2])
