@@ -34,27 +34,27 @@ float operator*(const Vector3D& v, const Vector3D& w) {
 
 //
 // Return -1 if there is no intersection, otherwise return r s.t. the
-// intersection point is P0 + r * (P1 - P0).
+// intersection point is orig + r * dir.
 //
 // If n is normalized, then r is exactly the euklidean distance from the ray to
 // the plane.
 //
 // Args:
-//   P0, P1: Points defining a ray from P0 to P1
-//   V0, n: Plane through V0 with normal n
+//   orig, dir: Points defining a ray from orig in direction dir
+//   p, n: Plane through p with normal n
 //
 // Cf. http://geomalgorithms.com/a06-_intersect-2.html
 //
 float ray_plane_intersection(
-    const Vector3D& P0, const Vector3D& P1,
-    const Vector3D& V0, const Vector3D& n)
+    const Vector3D& orig, const Vector3D& dir,
+    const Vector3D& p, const Vector3D& n)
 {
-    auto denom = n * (P1 - P0);
+    auto denom = n * dir;
     if (denom == 0) {
         return -1;
     }
 
-    auto nom = n * (V0 - P0);
+    auto nom = n * (p - orig);
     auto r = nom / denom;
 
     return r < 0 ? -1 : r;
@@ -69,26 +69,26 @@ float ray_plane_intersection(
 // the triangle.
 //
 // Args:
-//   P0, P1: Points defining a ray from P0 to P1
-//   V0, V1, V2: Points defining a triangle
+//   orig, dir: Points defining a ray from orig in direction dir
+//   p0, p1, p2: Points defining a triangle
 //
 // Cf. http://geomalgorithms.com/a06-_intersect-2.html
 //
 float ray_triangle_intersection(
-    const Vector3D& P0, const Vector3D& P1,
-    const Vector3D& V0, const Vector3D& V1, const Vector3D& V2)
+    const Vector3D& orig, const Vector3D& dir,
+    const Vector3D& p0, const Vector3D& p1, const Vector3D& p2)
 {
-    auto u = V1 - V0;
-    auto v = V2 - V0;
+    auto u = p1 - p0;
+    auto v = p2 - p0;
     auto n = u^v;  // normal vector of the triangle
 
-    auto r = ray_plane_intersection(P0, P1, V0, n);
+    auto r = ray_plane_intersection(orig, dir, p0, n);
     if (r == -1) {
         return -1;
     }
 
-    auto P_int = P0 + r * (P1 - P0);
-    auto w = P_int - V0;
+    auto p_int = orig + r * dir;
+    auto w = p_int - p0;
 
     // precompute scalar products
     auto uv = u*v;
@@ -169,55 +169,63 @@ bool ray_box_intersection(
 
 TEST_CASE("Ray plane intersection", "[intersection]") {
     REQUIRE(ray_plane_intersection(
-        Vector3D{0, 0, 0}, Vector3D{0, 0, 1},
-        Vector3D{0, 0, 0}, Vector3D{0, 0, 1}) == 0);
+        {0, 0, 0}, {0, 0, 1},
+        {0, 0, 0}, {0, 0, 1}) == 0);
 
     REQUIRE(ray_plane_intersection(
-        Vector3D{0, 0, 0}, Vector3D{0, 0, 1},
-        Vector3D{0, 0, 1}, Vector3D{0, 0, 1}) == 1);
+        {0, 0, 0}, {0, 0, 1},
+        {0, 0, 1}, {0, 0, 1}) == 1);
 
     REQUIRE(ray_plane_intersection(
-        Vector3D{0, 0, 0}, Vector3D{0, 0, 1},
-        Vector3D{1, 1, 1}, Vector3D{0, 0, 1}) == 1);
+        {0, 0, 0}, {0, 0, 1},
+        {1, 1, 1}, {0, 0, 1}) == 1);
 
     REQUIRE(ray_plane_intersection(
-        Vector3D{1, 1, 1}, Vector3D{0, 0, 1},
-        Vector3D{0, 0, 0}, Vector3D{1, 2, 1}) == 4.f/3.f);
+        {1, 1, 1}, {-1, -1, 0},
+        {0, 0, 0}, {1, 2, 1}) == 4.f/3.f);
 
     REQUIRE(ray_plane_intersection(
-        Vector3D{0, 0, 0}, Vector3D{0, 1, 0},
-        Vector3D{1, 0, 0}, Vector3D{1, 0, 0}) == -1);
+        {0, 0, 0}, {0, 1, 0},
+        {1, 0, 0}, {1, 0, 0}) == -1);
 
     REQUIRE(ray_plane_intersection(
-        Vector3D{0, 0, 0}, Vector3D{0, 0, 1},
-        Vector3D{1, 0, 0}, Vector3D{1, 0, 0}) == -1);
+        {0, 0, 0}, {0, 0, 1},
+        {1, 0, 0}, {1, 0, 0}) == -1);
 }
 
 
 TEST_CASE("Ray triangle intersection", "[intersection]") {
     REQUIRE(ray_triangle_intersection(
-        Vector3D{0, 0, 0}, Vector3D{1, 1, 1},
-        Vector3D{1, 0, 0}, Vector3D{0, 1, 0}, Vector3D{0, 0, 1}) == 1.f/3.f);
+        {0, 0, 0}, {1, 1, 1},
+        {1, 0, 0}, {0, 1, 0}, {0, 0, 1}) == 1.f/3.f);
 
     REQUIRE(ray_triangle_intersection(
-        Vector3D{0, 0, 0}, Vector3D{1, 0, 0},
-        Vector3D{1, 0, 0}, Vector3D{0, 1, 0}, Vector3D{0, 0, 1}) == 1);
+        {0, 0, 0}, {1, 0, 0},
+        {1, 0, 0}, {0, 1, 0}, {0, 0, 1}) == 1);
+
+    REQUIRE(
+        std::abs(
+            ray_triangle_intersection(
+                {0.2, 0.2, 0.2}, {1, 0, 0},
+                {1, 0, 0}, {0, 1, 0}, {0, 0, 1})
+            - 0.4f)
+        < std::numeric_limits<float>::epsilon());
 
     REQUIRE(ray_triangle_intersection(
-        Vector3D{0, 0, 0}, Vector3D{0, 1, 0},
-        Vector3D{1, 0, 0}, Vector3D{0, 1, 0}, Vector3D{0, 0, 1}) == 1);
+        {0, 0, 0}, {0, 1, 0},
+        {1, 0, 0}, {0, 1, 0}, {0, 0, 1}) == 1);
 
     REQUIRE(ray_triangle_intersection(
-        Vector3D{0, 0, 0}, Vector3D{0, 0, 1},
-        Vector3D{1, 0, 0}, Vector3D{0, 1, 0}, Vector3D{0, 0, 1}) == 1);
+        {0, 0, 0}, {0, 0, 1},
+        {1, 0, 0}, {0, 1, 0}, {0, 0, 1}) == 1);
 
     REQUIRE(ray_triangle_intersection(
-        Vector3D{0, 0, 0}, Vector3D{-1, -1, -1},
-        Vector3D{1, 0, 0}, Vector3D{0, 1, 0}, Vector3D{0, 0, 1}) == -1);
+        {0, 0, 0}, {-1, -1, -1},
+        {1, 0, 0}, {0, 1, 0}, {0, 0, 1}) == -1);
 
     REQUIRE(ray_triangle_intersection(
-        Vector3D{0, 0, 0}, Vector3D{1, 1, 0},
-        Vector3D{1, 0, 0}, Vector3D{0, 1, 0}, Vector3D{0, 0, 1}) == 0.5f);
+        {0, 0, 0}, {1, 1, 0},
+        {1, 0, 0}, {0, 1, 0}, {0, 0, 1}) == 0.5f);
 }
 
 TEST_CASE("Ray AABB intersection", "[intersection]") {

@@ -18,7 +18,6 @@ all: test_main.o $(EXECUTABLES)
 ecdh.o: ecdh.cpp ecdh.h
 
 test: all
-	nosetests *.py
 	$(foreach file,$(EXECUTABLES),./$(file)${\n})
 
 clean:
