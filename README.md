@@ -10,7 +10,7 @@
 
 * Kd-Tree (k = 2)
 * 1-dim Range Searching
-* Intersection of Ray with Plane and Triangle
+* Intersections (Ray with Plane, Triangle, AABB)
 * Conversion of grammar to CNF
 * ECDH on Curve25519 over F71
 * Elliptic curve arithmetic over finite prime field in char != 2, 3.

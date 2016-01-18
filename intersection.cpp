@@ -114,6 +114,59 @@ float ray_triangle_intersection(
 }
 
 
+//
+// Intersect a ray with an AABB (axis-aligned bounding box).
+//
+// The AABB is defined by bounds, where bounds[0] is the minimal corner and
+// bounds[1] is the maximal corner. The ray has origin at P0 and direction
+// -dir_inv. The inversed direction allows to make the algorithm faster.
+//
+bool ray_box_intersection(
+    const Vector3D& P0, const Vector3D& dir_inv,
+    const Vector3D bounds[2])
+{
+    float tmin, tmax, tymin, tymax, tzmin, tzmax;
+
+    // Normally, this should be also precomputed.
+    auto sgn_x = static_cast<int>(dir_inv.x < 0);
+    auto sgn_y = static_cast<int>(dir_inv.y < 0);
+    auto sgn_z = static_cast<int>(dir_inv.z < 0);
+
+    tmin = (bounds[sgn_x].x - P0.x) * dir_inv.x;
+    tmax = (bounds[1 - sgn_x].x - P0.x) * dir_inv.x;
+    tymin = (bounds[sgn_y].y - P0.y) * dir_inv.y;
+    tymax = (bounds[1 - sgn_y].y - P0.y) * dir_inv.y;
+
+    if ((tmin > tymax) || (tymin > tmax)) {
+        return false;
+    }
+    if (tymin > tmin) {
+        tmin = tymin;
+    }
+    if (tymax < tmax) {
+        tmax = tymax;
+    }
+
+    tzmin = (bounds[sgn_z].z - P0.z) * dir_inv.z;
+    tzmax = (bounds[1 - sgn_z].z - P0.z) * dir_inv.z;
+
+    if ((tmin > tzmax) || (tzmin > tmax)) {
+        return false;
+    }
+    if (tzmin > tmin) {
+        tmin = tzmin;
+    }
+    if (tzmax < tmax) {
+        tmax = tzmax;
+    }
+
+    return true;
+}
+
+//
+// Tests
+//
+
 TEST_CASE("Ray plane intersection", "[intersection]") {
     REQUIRE(ray_plane_intersection(
         Vector3D{0, 0, 0}, Vector3D{0, 0, 1},
@@ -165,4 +218,24 @@ TEST_CASE("Ray triangle intersection", "[intersection]") {
     REQUIRE(ray_triangle_intersection(
         Vector3D{0, 0, 0}, Vector3D{1, 1, 0},
         Vector3D{1, 0, 0}, Vector3D{0, 1, 0}, Vector3D{0, 0, 1}) == 0.5f);
+}
+
+TEST_CASE("Ray AABB intersection", "[intersection]") {
+    using Box = Vector3D[2];
+
+    REQUIRE(ray_box_intersection(
+        {0, 0, 0}, {-1, 1, 1},
+        Box{{-1, -1, 1}, {1, 1, 1}}));
+
+    REQUIRE(ray_box_intersection(
+        {0, 0, 0}, {-1, 0, 0},
+        Box{{-1, -1, 1}, {1, 1, 1}}));
+
+    REQUIRE(!ray_box_intersection(
+        {-2, -2, -2}, {1, 0, 0},
+        Box{{-1, -1, 1}, {1, 1, 1}}));
+
+    REQUIRE(!ray_box_intersection(
+        {-1, 0, 0}, {1, 0, 0},
+        Box{{0, 0, 0}, {1, 1, 1}}));
 }
