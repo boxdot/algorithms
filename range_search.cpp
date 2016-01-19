@@ -1,10 +1,8 @@
 #include "tools/catch.hpp"
 #include "lib/tree.h"
+#include "intersection.h"
 #include <deque>
 #include <vector>
-
-#include "tools/print.hpp"
-#include <iostream>
 
 //
 // 1-Dimensional Range Searching
@@ -202,6 +200,32 @@ private:
 };
 
 //
+// Kd-Tree (k = 3)
+//
+
+struct KDTree3Node {
+    Vector3D bbox[2];
+    std::vector<size_t> v_indices;
+};
+
+class KDTree3 : public Tree<KDTree3Node> {
+public:
+    // Construct a kd-tree from a set of points.
+    static KDTree3 build(std::initializer_list<Vector3D> points) {
+        if (points.size() == 0) {
+            return KDTree3();
+        }
+
+        if (points.size() == 1) {
+            return KDTree3();
+        }
+
+        return KDTree3();
+    }
+};
+
+
+//
 // Tests
 //
 
@@ -223,6 +247,11 @@ T test_tree() {
                 T(89),
                 T(100, T(100), T(105)))));
 }
+
+//
+// kd-Tree (k = 2)
+//
+
 
 
 TEST_CASE("Find split node in balanced bin tree", "[range search]") {

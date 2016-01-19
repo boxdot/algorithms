@@ -31,7 +31,7 @@ public:
     Tree() {}
     // leaf tree
     Tree(T val)
-        : root_(std::make_shared<const Node>(val, nullptr, nullptr))
+        : Tree(val, Tree(), Tree())
         {}
     Tree(T val, const Tree& lft, const Tree& rht)
         : root_(std::make_shared<const Node>(val, lft.root_, rht.root_))
