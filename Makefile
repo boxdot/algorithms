@@ -10,7 +10,8 @@ EXECUTABLES = \
 	ecdh \
 	cnf \
 	intersection \
-	range_search
+	range_search \
+	xorshift
 
 
 all: test_main.o $(EXECUTABLES)
