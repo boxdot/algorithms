@@ -17,6 +17,8 @@ constexpr int64_t pow(int64_t base, int exp) {
 }
 
 // inverse mod n
+// Note: gcc >= 5 needed, clang 3.6 is fine
+// cf. https://gcc.gnu.org/gcc-5/changes.html#cxx, extended constexpr.
 constexpr int64_t mod_inverse(int64_t a, int64_t n) {
     if (n == 1) {
         return 1;
@@ -36,7 +38,6 @@ constexpr int64_t mod_inverse(int64_t a, int64_t n) {
 //
 // Finite prime field (of characteristic p)
 //
-
 template<int64_t p /* prime */>
 class PF {
 public:

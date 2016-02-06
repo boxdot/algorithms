@@ -1,4 +1,5 @@
 #include <random>
+#include <algorithm>
 
 
 template <typename T>

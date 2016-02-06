@@ -1,5 +1,6 @@
-CC=c++
-CXXFLAGS=-std=c++1y -Wall -O0 -g -Ivendor/Catch/include
+CC=clang++
+CXX=clang++
+CXXFLAGS=-std=c++14 -Wall -Wextra -O0 -g -Ivendor/Catch/include
 
 EXECUTABLES = \
 	sorting \

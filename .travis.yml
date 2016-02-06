@@ -1,6 +1,15 @@
-language: c++
-compiler: clang
+sudo: required
+dist: trusty
+compiler: clang-3.6
+env:
+  - CXX=clang-3.6
+addons:
+  apt:
+    sources:
+      - llvm-toolchain-precise-3.6
+    packages:
+      - clang-3.6
 script:
-  - make clean
+  - make
   - make -j
   - make test
