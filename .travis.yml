@@ -5,10 +5,8 @@ env:
   - CXX=clang-3.6
 addons:
   apt:
-    sources:
-      - llvm-toolchain-precise-3.6
     packages:
-      - clang-3.6
+      - clang++-3.6
 script:
   - make
   - make -j
