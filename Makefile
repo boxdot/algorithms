@@ -1,7 +1,7 @@
 CC=$(CXX)
 CXXFLAGS=-std=c++14 -Wall -Wextra -O0 -g -Ivendor/Catch/include
 
-EXECUTABLES = \
+EXECUTABLES := \
 	sorting \
 	next_permutation \
 	johnson_trotter \
@@ -12,22 +12,26 @@ EXECUTABLES = \
 	range_search \
 	xorshift
 
+TESTU01_PATH := vendor/TestU01-1.2.3
+TESTU01_INCPATH := vendor/TestU01-1.2.3/dist/include
+TESTU01_LIBPATH := vendor/TestU01-1.2.3/dist/lib
+
 
 all: test_main.o $(EXECUTABLES)
 
 ecdh.o: ecdh.cpp ecdh.h
 
-xorshift: CXXFLAGS += -Ivendor/TestU01-1.2.3/include -Wno-writable-strings
-xorshift: LDFLAGS += -Lvendor/TestU01-1.2.3/testu01/.libs -ltestu01
-xorshift.o: xorshift.cpp vendor/TestU01-1.2.3
+xorshift: CXXFLAGS += -I$(TESTU01_INCPATH) -Wno-writable-strings
+xorshift: LDFLAGS += -L$(TESTU01_LIBPATH) -ltestu01
+xorshift.o: xorshift.cpp $(TESTU01_PATH)
 	$(CXX) $(CXXFLAGS)  -c -o $@ $<
 
 test-xorshift:
 	./xorshift "[bigcrush]"
 
-vendor/TestU01-1.2.3: vendor/TestU01.zip
+$(TESTU01_PATH): vendor/TestU01.zip
 	unzip $< -d vendor
-	cd $@ && CFLAGS="-Wno-return-type" ./configure && make
+	cd $@ && CFLAGS="-Wno-return-type" ./configure --prefix=$$(pwd)/dist &&  make -j && make install
 
 
 .PHONY: all clean
