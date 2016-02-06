@@ -10,3 +10,5 @@ johnson_trotter
 ecdh
 cnf
 .DS_Store
+vendor/TestU01-1.2.3
+xorshift

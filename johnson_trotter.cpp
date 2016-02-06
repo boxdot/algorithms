@@ -1,7 +1,6 @@
+#include <catch.hpp>
 #include <vector>
 #include <random>
-
-#include "tools/catch.hpp"
 
 
 // stupid implementation

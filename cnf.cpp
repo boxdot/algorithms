@@ -2,8 +2,7 @@
 // Conversion of grammar to CNF
 //
 
-#include "tools/catch.hpp"
-
+#include <catch.hpp>
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>

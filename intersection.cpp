@@ -1,4 +1,4 @@
-#include "tools/catch.hpp"
+#include <catch.hpp>
 
 
 struct Vector3D {

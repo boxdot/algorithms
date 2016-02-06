@@ -1,6 +1,5 @@
 #include "tools/sort.hpp"
-#include "tools/catch.hpp"
-
+#include <catch.hpp>
 #include <vector>
 
 

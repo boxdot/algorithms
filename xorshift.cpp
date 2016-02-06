@@ -1,6 +1,7 @@
-#include "tools/catch.hpp"
+#include <catch.hpp>
 #include <stdint.h>
 #include <iostream>
+#include <type_traits>
 #include <assert.h>
 #include <iomanip>
 
@@ -43,47 +44,54 @@ private:
 template<typename T>
 class xorshift64star {
 public:
-    explicit xorshift64star(uint64_t seed) : gen_(seed) { assert(seed != 0); }
+    explicit xorshift64star(uint64_t seed) : gen_(seed) {
+        assert(seed != 0);
+    }
     T operator()() {
         return std::ldexp(static_cast<T>(gen_() & MANTISSA_MASK), -DIGITS);
     }
 
     static constexpr int DIGITS = std::numeric_limits<T>::digits;
     static constexpr uint64_t MANTISSA_MASK = bitmask(DIGITS);
+
+    static_assert(std::is_floating_point<T>::value,
+        "T expected to be a floating point type");
+    static_assert(DIGITS <= 64, "T is too big");
 private:
     xorshift64star<uint64_t> gen_;
 };
 
 
-TEST_CASE("xorshift64star", "[xorshift64star]")
+TEST_CASE("xorshift64star smoke test", "[xorshift64star]")
 {
     std::cout << std::setprecision(100);
 
     xorshift64star<uint64_t> gen1(1);
-    std::cout << gen1() << std::endl;
-    std::cout << gen1() << std::endl;
+    REQUIRE(gen1() % 10000U == 5165);
+    REQUIRE(gen1() % 10000U == 1517);
 
     xorshift64star<double> gen2(1);
-    std::cout << gen2() << std::endl;
-    std::cout << gen2() << std::endl;
+    REQUIRE(static_cast<int>(gen2() * 10000) == 1501);
+    REQUIRE(static_cast<int>(gen2() * 10000) == 4890);
 
     xorshift64star<float> gen3(1);
-    std::cout << gen3() << std::endl;
-    std::cout << gen3() << std::endl;
-
-    // uint32_t res = 2.328306436538696289e-10 * 2.328306436538696289e-10;
-    // std::cout << res << std::endl;
+    REQUIRE(static_cast<int>(gen3() * 10000) == 4252);
+    REQUIRE(static_cast<int>(gen3() * 10000) == 4741);
 }
+
 
 xorshift64star<double> gen(1);
 double genfun(void) {
     return gen();
 }
 
-
-TEST_CASE("testu01", "[xorshift64star]")
+// Runtime of this test on my mid 2014 macbook pro is 4h, so I've disabled it.
+// Tested with https://www.iro.umontreal.ca/~simardr/testu01/tu01.html.
+TEST_CASE("xorshift64star testu01 bigcrush", "[.][bigcrush][xorshift64star]")
 {
     auto gen = unif01_CreateExternGen01("xorshift64star", genfun);
     bbattery_BigCrush(gen);
     unif01_DeleteExternGen01(gen);
+
+    REQUIRE(true);
 }

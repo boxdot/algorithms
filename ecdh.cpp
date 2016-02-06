@@ -1,6 +1,6 @@
 #include "ecdh.h"
-#include "tools/catch.hpp"
 
+#include <catch.hpp>
 #include <ostream>
 #include <assert.h>
 #include <iostream>

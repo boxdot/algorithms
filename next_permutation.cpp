@@ -1,7 +1,6 @@
+#include <catch.hpp>
 #include <vector>
 #include <random>
-
-#include "tools/catch.hpp"
 
 
 // https://en.wikipedia.org/wiki/Permutation#Generation_in_lexicographic_order

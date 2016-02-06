@@ -1,8 +1,12 @@
-#include "tools/catch.hpp"
 #include "lib/tree.h"
-#include "intersection.h"
+#include <catch.hpp>
 #include <deque>
 #include <vector>
+
+struct Vector3D {
+    float x, y, z;
+};
+
 
 //
 // 1-Dimensional Range Searching

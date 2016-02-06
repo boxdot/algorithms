@@ -1,5 +1,4 @@
-#include "tools/catch.hpp"
-
+#include <catch.hpp>
 #include <algorithm>
 #include <tuple>
 #include <assert.h>
