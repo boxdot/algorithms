@@ -1,13 +1,15 @@
 ## Next time...
 
 * Voronoi Tesselation
-* Benchmark multiplication algorithms of Karatsuba, Toom–Cook and Schönhage–Strassen on 256-bit integers (char[32]).
+* Benchmark multiplication algorithms of Karatsuba, Toom–Cook and
+  Schönhage–Strassen on 256-bit integers (char[32]).
 * Coin change problem
 * k-SUM
 * Linear embedding problem ?
 
 ## Done
 
+* xorshift64star
 * Kd-Tree (k = 2)
 * 1-dim Range Searching
 * Intersections (Ray with Plane, Triangle, AABB)
@@ -19,3 +21,13 @@
 * Johnson–Trotter
 * Multiset next permutation algorithm
 * Sorting (insertion sort, merge sort)
+
+## Used libraries
+
+* [Catch](https://github.com/philsquared/Catch) — C++ Automated Test Cases in
+  Headers (Boost Software License 1.0)
+* [TestU01](https://www.iro.umontreal.ca/~simardr/testu01/tu01.html) —
+  collection of utilities for the empirical statistical testing of uniform
+  random number generators.
+  ([License](http://www.iro.umontreal.ca/~simardr/testu01/copyright.html))
+
