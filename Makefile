@@ -19,8 +19,8 @@ ecdh.o: ecdh.cpp ecdh.h
 
 xorshift: CXXFLAGS += -Ivendor/TestU01-1.2.3/include -Wno-writable-strings
 xorshift: LDFLAGS += -Lvendor/TestU01-1.2.3/testu01/.libs -ltestu01
-xorshift: xorshift.o test_main.o vendor/TestU01-1.2.3
-	$(CC) $(LDFLAGS) $(wordlist 1, 2, $^) -o $@
+xorshift.o: xorshift.cpp vendor/TestU01-1.2.3
+	$(CXX) $(CXXFLAGS)  -c -o $@ $<
 
 test-xorshift:
 	./xorshift "[bigcrush]"
