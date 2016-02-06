@@ -1,0 +1,6 @@
+language: c++
+compiler: clang
+script:
+  - make clean
+  - make -j
+  - make test
