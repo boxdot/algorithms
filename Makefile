@@ -23,15 +23,15 @@ ecdh.o: ecdh.cpp ecdh.h
 
 xorshift: CXXFLAGS += -I$(TESTU01_INCPATH) -Wno-writable-strings
 xorshift: LDFLAGS += -L$(TESTU01_LIBPATH) -ltestu01 -rpath $(TESTU01_LIBPATH)
-xorshift.o: xorshift.cpp $(TESTU01_PATH)
+xorshift.o: xorshift.cpp $(TESTU01_PATH)/dist
 	$(CXX) $(CXXFLAGS)  -c -o $@ $<
 
 test-xorshift:
 	./xorshift "[bigcrush]"
 
-$(TESTU01_PATH): vendor/TestU01.zip
+$(TESTU01_PATH)/dist: vendor/TestU01.zip
 	unzip $< -d vendor
-	cd $@ && CFLAGS="-Wno-return-type" ./configure --prefix=$$(pwd)/dist &&  make -j && make install
+	cd $(TESTU01_PATH) && CC=cc CFLAGS="-Wno-return-type" ./configure --prefix=$$(pwd)/dist &&  make -j && make install
 
 
 .PHONY: all clean

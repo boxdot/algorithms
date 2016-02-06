@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/boxdot/algorithms.svg?branch=master)](https://travis-ci.org/boxdot/algorithms) using Clang 3.6
+
 ## Next time...
 
 * Voronoi Tesselation

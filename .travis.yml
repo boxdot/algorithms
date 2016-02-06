@@ -1,5 +1,7 @@
-env:
-  - CXX=clang++-3.6
+language: cpp
+compiler: clang++-3.6
+# env:
+  # - CXX=clang++-3.6
 addons:
   apt:
     sources:
@@ -8,7 +10,10 @@ addons:
     packages:
       - clang-3.6
       - g++-4.9  # brings libstd for clang
+install:
 script:
-  - make
-  - make -j
+  - CXX=clang++-3.6 make -j  # travis overwrites my env settings
   - make test
+# cache:
+#   directories:
+#     - vendor/TestU01-1.2.3
