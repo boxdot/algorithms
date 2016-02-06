@@ -18,6 +18,10 @@ all: test_main.o $(EXECUTABLES)
 
 ecdh.o: ecdh.cpp ecdh.h
 
+xorshift: CXXFLAGS += -I/usr/local/include -Wno-writable-strings
+xorshift: LDFLAGS += -Lvendor/TestU01/testu01 -ltestu01
+
+
 test: all
 	$(foreach file,$(EXECUTABLES),./$(file)${\n})
 

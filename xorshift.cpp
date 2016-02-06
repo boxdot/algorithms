@@ -4,6 +4,13 @@
 #include <assert.h>
 #include <iomanip>
 
+extern "C"{
+
+#include <unif01.h>
+#include <bbattery.h>
+
+}
+
 
 constexpr uint64_t bitmask(int bits) {
     if (bits == 0) {
@@ -66,4 +73,17 @@ TEST_CASE("xorshift64star", "[xorshift64star]")
 
     // uint32_t res = 2.328306436538696289e-10 * 2.328306436538696289e-10;
     // std::cout << res << std::endl;
+}
+
+xorshift64star<double> gen(1);
+double genfun(void) {
+    return gen();
+}
+
+
+TEST_CASE("testu01", "[xorshift64star]")
+{
+    auto gen = unif01_CreateExternGen01("xorshift64star", genfun);
+    bbattery_BigCrush(gen);
+    unif01_DeleteExternGen01(gen);
 }
