@@ -22,7 +22,7 @@ all: test_main.o $(EXECUTABLES)
 ecdh.o: ecdh.cpp ecdh.h
 
 xorshift: CXXFLAGS += -I$(TESTU01_INCPATH) -Wno-writable-strings
-xorshift: LDFLAGS += -L$(TESTU01_LIBPATH) -ltestu01
+xorshift: LDFLAGS += -L$(TESTU01_LIBPATH) -ltestu01 -rpath $(TESTU01_LIBPATH)
 xorshift.o: xorshift.cpp $(TESTU01_PATH)
 	$(CXX) $(CXXFLAGS)  -c -o $@ $<
 
