@@ -48,12 +48,6 @@ void Channel::send(const std::string& message) {
 // DistributedSystem impl.
 //
 
-
-Node::Id DistributedSystem::addNode(Node p) {
-    nodes_.emplace_back(new Node{p});
-    return nodes_.back()->id();
-}
-
 Channel::Id DistributedSystem::addChannel(Node::Id pid, Node::Id qid) {
     auto p = nodes_.at(pid).get();
     auto q = nodes_.at(qid).get();
@@ -67,8 +61,23 @@ void DistributedSystem::addBiChannel(Node::Id pid, Node::Id qid) {
 }
 
 void DistributedSystem::run() {
-    for (const auto& p : nodes_) {
-        futures_.push_back(
-            std::async(std::launch::async, p->behavior_, p.get()));
+    for (auto& p : nodes_) {
+        futures_.push_back(std::async(std::launch::async,
+            [](Node* p){
+                p->behavior_(p);
+                p->is_alive_ = false;
+            }, p.get()));
+    }
+}
+
+void DistributedSystem::stop() {
+    for (auto& p : nodes_) {
+        p->stop();
+    }
+}
+
+void DistributedSystem::await_all_done() {
+    for (auto& fut : futures_) {
+        fut.get();
     }
 }

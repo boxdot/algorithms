@@ -31,7 +31,7 @@ int main(int argc, char const *argv[])
         });
 
     Node::Id r = sys.addNode(
-        [&](Node* self) {
+        [](Node* self) {
             aout() << "Hello from " << self->id() << std::endl;
             self->send(0, "m3");
             while (!self->is_stopped()) {
@@ -45,6 +45,11 @@ int main(int argc, char const *argv[])
     sys.addChannel(q, r);
 
     sys.run();
+
+    std::this_thread::sleep_for(3s);
+
+    sys.stop();
+    sys.await_all_done();
 
     return 0;
 }
