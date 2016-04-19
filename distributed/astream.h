@@ -1,10 +1,15 @@
+//
+// Atomic out stream
+//
+// Print synchronized to std::ostream in non-interleaved chunks.
+//
+
 #pragma once
 
 #include <ostream>
 #include <sstream>
 
 
-// atomic out stream
 class aout {
 public:
     aout();

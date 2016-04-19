@@ -1,3 +1,12 @@
+//
+// Distributed system for simulation of distributed algorithms
+//
+// Consists of Nodes (Processes) and Channels connecting those. Messages are
+// sent asynchronously from Node to Node over a Channel. Behavior of a Node is
+// specified by a Lambda. Nodes and Channels are referenced by non-negative
+// integers.
+//
+
 #pragma once
 
 #include <queue>
