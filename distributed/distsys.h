@@ -9,24 +9,43 @@
 
 #pragma once
 
-#include <queue>
+#include <vector>
 #include <future>
 #include <map>
 #include <string>
 #include <atomic>
+#include <thread>
 
 
 class Node;
 class Channel;
 class DistributedSystem;
-
-using Mailbox = std::queue<std::pair<uint32_t, std::string>>;
+// using Mailbox = std::queue<std::pair<uint32_t, std::string>>;
 
 
 class Node {
 public:
 
     using Id = uint32_t;
+
+private:
+
+    class Mailbox {
+    public:
+
+        void push(Id, const std::string& msg);
+        std::pair<Id, std::string> pop();
+        size_t size() const;
+        bool empty() const;
+        std::vector<std::pair<Node::Id, std::string>> all() const;
+
+    private:
+
+        std::vector<std::pair<Node::Id, std::string>> storage_;
+        mutable std::mutex access_;
+    };
+
+public:
 
     Id id() const { return id_; }
     bool is_alive() const { return is_alive_; }
@@ -36,6 +55,26 @@ public:
     std::pair<Node::Id, std::string> receive();
 
     void stop() { is_stopped_ = true; }
+
+    void wait_for(std::chrono::nanoseconds nsec) {
+        std::this_thread::sleep_for(nsec);
+    }
+
+    std::vector<Channel*> out_channels() const {
+        std::vector<Channel*> res;
+        for (auto& ch : out_channels_) {
+            res.push_back(ch.second);
+        }
+        return res;
+    }
+
+    std::vector<Channel*> inc_channels() const {
+        std::vector<Channel*> res;
+        for (auto& ch : inc_channels_) {
+            res.push_back(ch.second);
+        }
+        return res;
+    }
 
 private:
 
@@ -53,7 +92,7 @@ private:
     friend class DistributedSystem;
     friend class Channel;
 
-private:
+public:
 
     Id id_ = uniqueId();
     std::function<void(Node*)> behavior_;
@@ -67,7 +106,6 @@ private:
 
 
 class Channel {
-
 public:
 
     using Id = uint32_t;
@@ -77,6 +115,10 @@ public:
     Node::Id to() const { return to_->id(); }
 
     void send(const std::string& message);
+
+    std::vector<std::pair<Node::Id, std::string>> messages() {
+        return to_->mb_.all();
+    }
 
 private:
 
@@ -97,8 +139,8 @@ private:
 };
 
 
-struct DistributedSystem {
-
+class DistributedSystem {
+public:
     template <typename Behavior>
     Node::Id addNode(Behavior behavior) {
         nodes_.emplace_back(new Node{behavior});

@@ -1,11 +1,13 @@
 CXXFLAGS := -std=c++1y -O0 -g
-CC=$(CXX)
-all: system
+CC = $(CXX)
+BINS := snapshot
+all: $(BINS)
 
-system: system.o astream.o distsys.o
+$(BINS): astream.o distsys.o
+
 astream.o : astream.cpp astream.h
 distsys.o: distsys.cpp distsys.h
 
 
 clean:
-	rm -rf system *.o *.dSYM
+	rm -rf $(BINS) *.o *.dSYM

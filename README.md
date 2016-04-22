@@ -11,6 +11,7 @@
 
 ## Done
 
+* Chandy-Lamport algorithm
 * xorshift64star
 * Kd-Tree (k = 2)
 * 1-dim Range Searching
