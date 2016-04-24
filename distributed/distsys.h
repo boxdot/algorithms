@@ -14,13 +14,11 @@
 #include <map>
 #include <string>
 #include <atomic>
-#include <thread>
 
 
 class Node;
 class Channel;
 class DistributedSystem;
-// using Mailbox = std::queue<std::pair<uint32_t, std::string>>;
 
 
 class Node {
@@ -56,25 +54,9 @@ public:
 
     void stop() { is_stopped_ = true; }
 
-    void wait_for(std::chrono::nanoseconds nsec) {
-        std::this_thread::sleep_for(nsec);
-    }
-
-    std::vector<Channel*> out_channels() const {
-        std::vector<Channel*> res;
-        for (auto& ch : out_channels_) {
-            res.push_back(ch.second);
-        }
-        return res;
-    }
-
-    std::vector<Channel*> inc_channels() const {
-        std::vector<Channel*> res;
-        for (auto& ch : inc_channels_) {
-            res.push_back(ch.second);
-        }
-        return res;
-    }
+    void wait_for(std::chrono::nanoseconds nsec) const;
+    std::vector<Channel*> out_channels() const;
+    std::vector<Channel*> inc_channels() const;
 
 private:
 
@@ -113,12 +95,10 @@ public:
     Id id() const { return id_; }
     Node::Id from() const { return from_->id(); }
     Node::Id to() const { return to_->id(); }
+    std::vector<std::pair<Node::Id, std::string>> messages() const;
 
     void send(const std::string& message);
 
-    std::vector<std::pair<Node::Id, std::string>> messages() {
-        return to_->mb_.all();
-    }
 
 private:
 

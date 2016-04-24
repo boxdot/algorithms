@@ -1,5 +1,7 @@
 #include "distsys.h"
 
+#include <thread>
+
 
 //
 // Node impl.
@@ -18,6 +20,26 @@ std::pair<Node::Id, std::string> Node::receive() {
     return mb_.pop();
 }
 
+void Node::wait_for(std::chrono::nanoseconds nsec) const {
+    std::this_thread::sleep_for(nsec);
+}
+
+std::vector<Channel*> Node::out_channels() const {
+    std::vector<Channel*> res;
+    for (auto& ch : out_channels_) {
+        res.push_back(ch.second);
+    }
+    return res;
+}
+
+std::vector<Channel*> Node::inc_channels() const {
+    std::vector<Channel*> res;
+    for (auto& ch : inc_channels_) {
+        res.push_back(ch.second);
+    }
+    return res;
+}
+
 void Node::addOutChannel(Channel* ch) {
     out_channels_[ch->to()] = ch;
 }
@@ -27,7 +49,7 @@ void Node::addIncChannel(Channel* ch) {
 }
 
 //
-// Mailbox impl.
+// Node::Mailbox impl.
 //
 
 void Node::Mailbox::push(Node::Id id, const std::string& msg) {
@@ -66,10 +88,13 @@ Channel::Channel(Node* p, Node* q) : from_(p), to_(q) {
     to_->addIncChannel(this);
 }
 
+std::vector<std::pair<Node::Id, std::string>> Channel::messages() const {
+    return to_->mb_.all();
+}
+
 void Channel::send(const std::string& message) {
     to_->mb_.push(from_->id(), message);
 }
-
 
 //
 // DistributedSystem impl.
