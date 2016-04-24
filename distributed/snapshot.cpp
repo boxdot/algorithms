@@ -18,8 +18,11 @@
 #include "distsys.h"
 #include "astream.h"
 
+#include <catch.hpp>
+
 #include <map>
 #include <assert.h>
+#include <iostream>
 
 
 using State = std::string;
@@ -207,21 +210,20 @@ void simulation() {
     sys.run();
     sys.await_all_done();
 
-    assert(p_snapshot_state == "grey");
-    assert(p_snapshot_msgs.size() == 0);
-    assert(q_snapshot_state == "dark grey");
-    assert(q_snapshot_msgs.size() == 0);
-    assert(r_snapshot_state == "white");
-    assert(r_snapshot_msgs.size() == 1);
-    assert(r_snapshot_msgs[0].first == q);
-    assert(r_snapshot_msgs[0].second == "m2");
+    REQUIRE(p_snapshot_state == "grey");
+    REQUIRE(p_snapshot_msgs.size() == 0);
+    REQUIRE(q_snapshot_state == "dark grey");
+    REQUIRE(q_snapshot_msgs.size() == 0);
+    REQUIRE(r_snapshot_state == "white");
+    REQUIRE(r_snapshot_msgs.size() == 1);
+    REQUIRE(r_snapshot_msgs[0].first == q);
+    REQUIRE(r_snapshot_msgs[0].second == "m2");
 }
 
 
-int main(int argc, char const *argv[])
-{
-    for (int i = 0; i != 100; ++i) {
+TEST_CASE("Chandy-Lamport snapshot simulation", "[snapshot]") {
+    for (int i = 1; i != 11; ++i) {
+        std::cout << "== Simulation " << i << std::endl;
         simulation();
     }
-    return 0;
 }

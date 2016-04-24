@@ -10,7 +10,8 @@ EXECUTABLES := \
 	cnf \
 	intersection \
 	range_search \
-	xorshift
+	xorshift \
+	distributed/snapshot
 
 TESTU01_PATH := vendor/TestU01-1.2.3
 TESTU01_INCPATH := vendor/TestU01-1.2.3/dist/include
@@ -25,6 +26,8 @@ xorshift: CXXFLAGS += -I$(TESTU01_INCPATH) -Wno-writable-strings
 xorshift: LDFLAGS += -L$(TESTU01_LIBPATH) -ltestu01 -rpath $(TESTU01_LIBPATH)
 xorshift.o: xorshift.cpp $(TESTU01_PATH)/dist
 	$(CXX) $(CXXFLAGS)  -c -o $@ $<
+
+distributed/snapshot: distributed/distsys.o distributed/astream.o
 
 test-xorshift:
 	./xorshift "[bigcrush]"
