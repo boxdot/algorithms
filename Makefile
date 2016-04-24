@@ -1,5 +1,5 @@
 CC=$(CXX)
-CXXFLAGS=-std=c++14 -Wall -Wextra -O0 -g -Ivendor/Catch/include
+CXXFLAGS=-std=c++1y -Wall -Wextra -O0 -g -Ivendor/Catch/include
 
 EXECUTABLES := \
 	sorting \
