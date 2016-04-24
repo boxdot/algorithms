@@ -7,7 +7,7 @@
 // p (grey) initializes the snapshot, sends a message to q and becomes black. q
 // (grey) sends a message to r with a small delay, s.t. the snapshot message of
 // p arrives before it at r. Then q becomes dark grey. After receiving first
-// snapshot message is becomes (black). r does nothing and is always white.
+// snapshot message it becomes (black). r does nothing and is always white.
 //
 // Expected states:
 // p - grey, no messages
@@ -64,7 +64,8 @@ void simulation() {
                 for (auto& ch : self->out_channels()) {
                     self->send(ch->to(), "ctrl_snapshot");
                 }
-                aout() << self->id() << ": Sending m1 to 1" << std::endl;
+                aout() << self->id() << ": Sending m1 to " << self->id() + 1
+                    << std::endl;
                 self->send(self->id() + 1, "m1");
                 state = "black";
 
@@ -108,7 +109,8 @@ void simulation() {
                 // delay
                 self->wait_for(TICK);
 
-                aout() << self->id() << ": Sending message m2 to 2\n";
+                aout() << self->id() << ": Sending message m2 to "
+                    << self->id() + 1 << std::endl;
                 self->send(self->id() + 1, "m2");
                 state = "dark grey";
 
