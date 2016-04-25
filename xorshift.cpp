@@ -89,7 +89,8 @@ double genfun(void) {
 // Tested with https://www.iro.umontreal.ca/~simardr/testu01/tu01.html.
 TEST_CASE("xorshift64star testu01 bigcrush", "[.][bigcrush][xorshift64star]")
 {
-    auto gen = unif01_CreateExternGen01("xorshift64star", genfun);
+    const char* genname = "xorshift64star";
+    auto gen = unif01_CreateExternGen01(const_cast<char*>(genname), genfun);
     bbattery_BigCrush(gen);
     unif01_DeleteExternGen01(gen);
 
