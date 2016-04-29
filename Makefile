@@ -1,5 +1,6 @@
 CC=$(CXX)
-CXXFLAGS=-std=c++1y -Wall -Wextra -O0 -g -Ivendor/Catch/include
+CXXFLAGS=-std=c++1y -Wall -Wextra -O0 -g -Ivendor/Catch/include \
+	-Wno-missing-braces
 
 EXECUTABLES := \
 	sorting \
@@ -11,7 +12,8 @@ EXECUTABLES := \
 	intersection \
 	range_search \
 	xorshift \
-	distributed/snapshot
+	distributed/snapshot \
+	geometric/tests/barycentric
 
 TESTU01_PATH := vendor/TestU01-1.2.3
 TESTU01_INCPATH := vendor/TestU01-1.2.3/dist/include
@@ -19,6 +21,11 @@ TESTU01_LIBPATH := vendor/TestU01-1.2.3/dist/lib
 
 
 all: test_main.o $(EXECUTABLES)
+
+.PHONY: geometric
+geometric: $(patsubst %.cpp,%,$(wildcard geometric/tests/*.cpp))
+
+geometric/tests/barycentric.o: $(wildcard geometric/*.h)
 
 ecdh.o: ecdh.cpp ecdh.h
 
