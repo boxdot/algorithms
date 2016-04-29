@@ -2,12 +2,12 @@
 #include <iostream>
 #include <assert.h>
 
-// extern "C"{
+extern "C"{
 
-// #include <unif01.h>
-// #include <bbattery.h>
+#include <unif01.h>
+#include <bbattery.h>
 
-// }
+}
 
 
 constexpr uint64_t bitmask(int bits) {
@@ -77,19 +77,19 @@ TEST_CASE("xorshift64star smoke test", "[xorshift64star]")
 }
 
 
-// xorshift64star<double> gen(1);
-// double genfun(void) {
-//     return gen();
-// }
+xorshift64star<double> gen(1);
+double genfun(void) {
+    return gen();
+}
 
-// // Runtime of this test on my mid 2014 macbook pro is 4h, so I've disabled it.
-// // Tested with https://www.iro.umontreal.ca/~simardr/testu01/tu01.html.
-// TEST_CASE("xorshift64star testu01 bigcrush", "[.][bigcrush][xorshift64star]")
-// {
-//     const char* genname = "xorshift64star";
-//     auto gen = unif01_CreateExternGen01(const_cast<char*>(genname), genfun);
-//     bbattery_BigCrush(gen);
-//     unif01_DeleteExternGen01(gen);
+// Runtime of this test on my mid 2014 macbook pro is 4h, so I've disabled it.
+// Tested with https://www.iro.umontreal.ca/~simardr/testu01/tu01.html.
+TEST_CASE("xorshift64star testu01 bigcrush", "[.][bigcrush][xorshift64star]")
+{
+    const char* genname = "xorshift64star";
+    auto gen = unif01_CreateExternGen01(const_cast<char*>(genname), genfun);
+    bbattery_BigCrush(gen);
+    unif01_DeleteExternGen01(gen);
 
-//     REQUIRE(true);
-// }
+    REQUIRE(true);
+}
