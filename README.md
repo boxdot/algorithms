@@ -11,11 +11,12 @@
 
 ## Done
 
-* Chandy-Lamport snapshot algorithm
+* (geometric) barycentric coordinates
+* (distributed) Chandy-Lamport snapshot algorithm
 * xorshift64star
 * Kd-Tree (k = 2)
 * 1-dim Range Searching
-* Intersections (Ray with Plane, Triangle, AABB)
+* (geometric) Intersections (Ray with Plane, Triangle, AABB)
 * Conversion of grammar to CNF
 * ECDH on Curve25519 over F71
 * Elliptic curve arithmetic over finite prime field in char != 2, 3.

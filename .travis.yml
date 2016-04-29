@@ -9,7 +9,6 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - clang-3.6
-      - g++-4.9  # brings libstd for clang
 install:
 script:
   - CXX=clang++-3.6 make -j  # travis overwrites my env settings
