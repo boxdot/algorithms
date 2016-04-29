@@ -27,15 +27,18 @@ ecdh.o: ecdh.cpp ecdh.h
 
 xorshift: LDFLAGS += -L$(TESTU01_LIBPATH) -ltestu01 -rpath $(TESTU01_LIBPATH)
 xorshift.o: CXXFLAGS += -I$(TESTU01_INCPATH)
-xorshift.o: xorshift.cpp $(TESTU01_PATH)/dist
+xorshift.o: xorshift.cpp | $(TESTU01_PATH)
 
 test-xorshift:
 	./xorshift "[bigcrush]"
 
-$(TESTU01_PATH)/dist: vendor/TestU01.zip
-	echo $(CXX)
-	unzip $< -d vendor
-	cd $(TESTU01_PATH) && CC=cc CFLAGS="-Wno-return-type" ./configure --prefix=$$(pwd)/dist &&  make -j && make install
+$(TESTU01_PATH): vendor/TestU01.zip
+	rm -rf $(TESTU01_PATH)
+	unzip -o $< -d vendor
+	cd $(TESTU01_PATH) && \
+		CC=cc CFLAGS="-Wno-return-type" ./configure --prefix=$$(pwd)/dist && \
+		make -j && \
+		make install
 
 distributed/snapshot: CXXFLAGS += -pthread
 distributed/snapshot: LDLIBS += -lpthread
