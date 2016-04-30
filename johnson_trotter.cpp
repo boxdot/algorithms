@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include <vector>
 #include <random>
-
+#include <assert.h>
 
 // stupid implementation
 template<typename Iter>
@@ -23,7 +23,8 @@ int sgn(Iter begin, Iter end) {
 // assumption: seq == {0, ..., n - 1} as set
 bool johnson_trotter(std::vector<int>& seq)
 {
-    const size_t n = seq.size();
+    assert(seq.size() <= std::numeric_limits<int>::max());
+    const int n = seq.size();
     std::vector<int> invseq(n, 0);
 
     for (int i = 0; i < n; ++i) {
@@ -57,15 +58,15 @@ bool johnson_trotter(std::vector<int>& seq)
 
 // sometimes called plain-changes
 bool johnson_trotter_improved(std::vector<int>& seq) {
-    const auto N = seq.size();
+    const size_t N = seq.size();
 
     std::vector<int> c(N, 0);
     std::vector<int> o(N, 0);
 
     // count inversions
     // could be done progressively with state
-    for (int i = 0; i < N; ++i) {
-        for (int j = i + 1; j < N; ++j) {
+    for (size_t i = 0; i < N; ++i) {
+        for (size_t j = i + 1; j < N; ++j) {
             if (seq[j] < seq[i]) {
                 c[seq[i]] += 1;
             }
@@ -73,7 +74,7 @@ bool johnson_trotter_improved(std::vector<int>& seq) {
     }
 
     // find directions
-    for (int i = 1, k = 0; i < N - 1; ++i) {
+    for (size_t i = 1, k = 0; i < N - 1; ++i) {
         k += c[i];
         o[i + 1] = k % 2;
     }

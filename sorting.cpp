@@ -5,9 +5,9 @@
 
 template<typename T>
 void insertion_sort(std::vector<T>& ar) {
-    for (int i = 1; i < ar.size(); ++i) {
+    for (size_t i = 1; i < ar.size(); ++i) {
         const T key = ar[i];
-        int j = i - 1;
+        size_t j = i - 1;
         while (j >= 0 && ar[j] > key) {
             ar[j + 1] = ar[j];
             j--;
@@ -26,9 +26,9 @@ void merge(
 {
     std::vector<int> left(ar.begin() + p, ar.begin() + q);
     std::vector<int> right(ar.begin() + q, ar.begin() + r);
-    int i = 0;
-    int j = 0;
-    int k = p;
+    size_t i = 0;
+    size_t j = 0;
+    size_t k = p;
     for (; k < r && i < left.size() && j < right.size(); ++k)
     {
         if (left[i] < right[j]) {
