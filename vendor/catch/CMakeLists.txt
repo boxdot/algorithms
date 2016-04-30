@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.8)
 project(catch_builder CXX)
 include(ExternalProject)
 find_package(Git REQUIRED)
+set_directory_properties(PROPERTIES CLEAN_NO_CUSTOM 1)
 
 ExternalProject_Add(
     catch

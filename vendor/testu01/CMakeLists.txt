@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8.8)
 include(ExternalProject)
-
-message("" ${CMAKE_CURRENT_SOURCE_DIR})
+set_directory_properties(PROPERTIES CLEAN_NO_CUSTOM 1)
 
 ExternalProject_Add(
     project_testu01

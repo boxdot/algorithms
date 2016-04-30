@@ -29,12 +29,11 @@ add_subdirectory(${EXT_PROJECTS_DIR}/catch)
 include_directories(${CATCH_INCLUDE_DIR})
 enable_testing(true)
 
-add_library(catch_main test_main.cpp)
+add_library(catch_main tools/catch_main.cpp)
 add_dependencies(catch_main catch)
 
 # test01
 add_subdirectory(${EXT_PROJECTS_DIR}/testu01)
-message("lib " ${TESTU01_LIBRARY_DIR})
 link_directories(${TESTU01_LIBRARY_DIR})
 
 # xorshift executable
