@@ -1,15 +1,2 @@
-*.pyc
-*.dSYM
-*.o
-sorting
-range_search
-intersection
-next_permutation
-johnson_trotter
-3sum
-ecdh
-cnf
 .DS_Store
-vendor/TestU01-1.2.3
-xorshift
-distributed/snapshot
+build

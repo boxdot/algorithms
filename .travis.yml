@@ -1,18 +1,24 @@
 language: cpp
 compiler: clang++-3.6
-# env:
-  # - CXX=clang++-3.6
+
 addons:
   apt:
     sources:
       - llvm-toolchain-precise-3.6
       - ubuntu-toolchain-r-test
+      - george-edison55-precise-backports
     packages:
       - clang-3.6
-install:
+      - cmake
+      - cmake-data
+
 script:
-  - CXX=clang++-3.6 make -j  # travis overwrites my env settings
+  - mkdir -p build && cd build
+  - cmake .. -DCMAKE_CXX_COMPILER=clang++-3.6
+  - make
   - make test
-# cache:
-#   directories:
-#     - vendor/TestU01-1.2.3/dist
+
+cache:
+  directories:
+    - build/catch
+    - build/testu01
