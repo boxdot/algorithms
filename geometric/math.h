@@ -130,6 +130,23 @@ float orient(const Vector2& a, const Vector2& b, const Vector2& c);
 float orient(
     const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d);
 
+// Check if d is in the circle through triangle abc
+//
+// Assume orient(a, b, c) > 0; if return value is positive (negative), then d
+// lies in (outside of) circle. If the value is 0, then the four points are
+// cocircular.
+float is_incircle(
+    const Vector2& a, const Vector2& b, const Vector2& c, const Vector2& d);
+
+// Check if e is in the sphere through a, b, c, d
+//
+// Assume orient(a, b, c, e) > 0; if return value is positive (negative), then
+// e lies in (outside of) the sphere through a, b, c, d. If the value is 0,
+// then the five points are cospherical.
+float is_insphere(
+    const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d,
+    const Vector3& e);
+
 } // namespace math
 
 
@@ -313,6 +330,33 @@ float orient(
         , b.x, b.y, b.z, 1.f
         , c.x, c.y, c.z, 1.f
         , d.x, d.y, d.z, 1.f
+        });
+}
+
+
+float is_incircle(
+    const Vector2& a, const Vector2& b, const Vector2& c, const Vector2& d)
+{
+    return det(Matrix3
+        { a.x-d.x, a.y-d.y, (a.x-d.x)*(a.x-d.x) + (a.y-d.y)*(a.y-d.y)
+        , b.x-d.x, b.y-d.y, (b.x-d.x)*(b.x-d.x) + (b.y-d.y)*(b.y-d.y)
+        , c.x-d.x, c.y-d.y, (c.x-d.x)*(c.x-d.x) + (c.y-d.y)*(c.y-d.y)
+        });
+}
+
+float is_insphere(
+    const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d,
+    const Vector3& e)
+{
+    return det(Matrix4
+        { a.x-e.x, a.y-e.y, a.z-e.z,
+            (a.x-e.x)*(a.x-e.x) + (a.y-e.y)*(a.y-e.y) + (a.z-e.z)*(a.z-e.z)
+        , b.x-e.x, b.y-e.y, b.z-e.z,
+            (b.x-e.x)*(b.x-e.x) + (b.y-e.y)*(b.y-e.y) + (b.z-e.z)*(b.z-e.z)
+        , c.x-e.x, c.y-e.y, c.z-e.z,
+            (c.x-e.x)*(c.x-e.x) + (c.y-e.y)*(c.y-e.y) + (c.z-e.z)*(c.z-e.z)
+        , d.x-e.x, d.y-e.y, d.z-e.z,
+            (d.x-e.x)*(d.x-e.x) + (d.y-e.y)*(d.y-e.y) + (d.z-e.z)*(d.z-e.z)
         });
 }
 
