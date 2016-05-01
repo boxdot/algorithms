@@ -8,11 +8,16 @@ void insertion_sort(std::vector<T>& ar) {
     for (size_t i = 1; i < ar.size(); ++i) {
         const T key = ar[i];
         size_t j = i - 1;
-        while (j >= 0 && ar[j] > key) {
+        while (j > 0 && ar[j] > key) {
             ar[j + 1] = ar[j];
             j--;
         }
-        ar[j + 1] = key;
+        if (j == 0 && ar[0] > key) {
+            ar[1] = ar[0];
+            ar[0] = key;
+        } else {
+            ar[j + 1] = key;
+        }
     }
 }
 

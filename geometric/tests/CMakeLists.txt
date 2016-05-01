@@ -1,5 +1,6 @@
 set(TESTS
     barycentric
+    math
 )
 
 foreach (TEST_NAME ${TESTS})
