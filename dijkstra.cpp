@@ -1,11 +1,10 @@
 #include <catch.hpp>
 
-#include <deque>
+#include <queue>
 #include <map>
 #include <set>
 #include <vector>
 #include <string>
-#include <iostream>
 
 
 using label_t = std::string;
@@ -33,19 +32,23 @@ std::tuple<weight_t, path_t> dijkstra(
 {
     auto g = graph(edges);
 
+    // priority queue = {(0, source, empty path)} and seen set
     using queue_element_t = std::tuple<weight_t, label_t, path_t>;
-    std::vector<queue_element_t> queue{std::make_tuple(0, source, path_t{})};
-    auto queue_comp = [](const queue_element_t& a, const queue_element_t& b) {
-        return std::get<0>(a) >= std::get<0>(b);
+    struct queue_compare {
+        bool operator()(const queue_element_t& a, const queue_element_t& b) {
+            return std::get<0>(a) >= std::get<0>(b);
+        }
     };
+    std::priority_queue<
+        queue_element_t, std::vector<queue_element_t>, queue_compare> queue;
+    queue.push(std::make_tuple(0, source, path_t{}));
     std::set<label_t> seen;
 
+    // walk
     while (!queue.empty()) {
         weight_t cost; label_t v; path_t path;
-        std::tie(cost, v, path) = queue.front();
-
-        std::pop_heap(queue.begin(), queue.end(), queue_comp);
-        queue.pop_back();
+        std::tie(cost, v, path) = queue.top();
+        queue.pop();
 
         if (!seen.count(v)) {
             auto new_path = path;
@@ -61,9 +64,8 @@ std::tuple<weight_t, path_t> dijkstra(
                     weight_t cost_w;
                     std::tie(w, cost_w) = edge;
                     if (!seen.count(w)) {
-                        queue.push_back(
+                        queue.push(
                             std::make_tuple(cost + cost_w, w, new_path));
-                        std::push_heap(queue.begin(), queue.end(), queue_comp);
                     }
                 }
             }
@@ -74,20 +76,20 @@ std::tuple<weight_t, path_t> dijkstra(
 
 
 TEST_CASE("Test dijsktra", "[dijsktra]") {
-    edges_t edges = {
-        {"A", "B", 7},
-        {"A", "D", 5},
-        {"B", "C", 8},
-        {"B", "D", 9},
-        {"B", "E", 7},
-        {"C", "E", 5},
-        {"D", "E", 15},
-        {"D", "F", 6},
-        {"E", "F", 8},
-        {"E", "G", 9},
-        {"F", "G", 11},
-        {"A", "G", 23}
-    };
+    edges_t edges{{
+        std::make_tuple("A", "B", 7),
+        std::make_tuple("A", "D", 5),
+        std::make_tuple("B", "C", 8),
+        std::make_tuple("B", "D", 9),
+        std::make_tuple("B", "E", 7),
+        std::make_tuple("C", "E", 5),
+        std::make_tuple("D", "E", 15),
+        std::make_tuple("D", "F", 6),
+        std::make_tuple("E", "F", 8),
+        std::make_tuple("E", "G", 9),
+        std::make_tuple("F", "G", 11),
+        std::make_tuple("A", "G", 23),
+    }};
 
     weight_t w; path_t path;
 
