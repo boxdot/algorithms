@@ -1,3 +1,5 @@
+#include "lib/ycombinator.h"
+
 #include <catch.hpp>
 
 #include <map>
@@ -6,8 +8,6 @@
 #include <stack>
 #include <string>
 #include <vector>
-
-#include <iostream>
 
 
 using label_t = std::string;
@@ -91,6 +91,44 @@ void dfs(const graph_t& g, const label_t& source, Visitor visit) {
 }
 
 
+//
+// Precondition: g is a DAG
+// Sorting is done on all reachable nodes from source.
+//
+path_t topological_sort(const graph_t& g, const label_t& source) {
+    enum class MARK { TEMPORARY, PERMANENT };
+    std::map<label_t, MARK> marks;
+
+    path_t path;
+    auto visit = y_combinator(
+        [&path, &marks, &g](auto visit, const label_t& v) -> void {
+            auto mark = marks.find(v);
+
+            if (mark != marks.end()) {
+                if (mark->second == MARK::TEMPORARY) {
+                    throw std::runtime_error("Not a dag!");
+                }
+                return;
+            }
+
+            // unmarked node
+            marks[v] = MARK::TEMPORARY;
+            auto vit = g.find(v);
+            if (vit != g.end()) {
+                for (const auto w : vit->second) {
+                    visit(w);
+                }
+            }
+            marks[v] = MARK::PERMANENT;
+
+            path.push_back(v);
+        });
+
+    visit(source);
+
+    return path;
+}
+
 
 std::tuple<weight_t, path_t> dijkstra(
     const weighted_graph_t& g, const label_t& source, const label_t& target)
@@ -138,8 +176,12 @@ std::tuple<weight_t, path_t> dijkstra(
 }
 
 
-TEST_CASE("Test bfs", "[bfs]") {
-    auto g = graph(edges_t{{
+//
+// Tests
+//
+
+auto test_graph() {
+    return graph(edges_t{{
         {"A", "B"},
         {"A", "D"},
         {"B", "C"},
@@ -153,38 +195,39 @@ TEST_CASE("Test bfs", "[bfs]") {
         {"F", "G"},
         {"A", "G"},
     }});
+}
 
+
+TEST_CASE("Test bfs", "[bfs]") {
     path_t path;
-    bfs(g, "A", [&path](const label_t& v) {
+    bfs(test_graph(), "A", [&path](const label_t& v) {
         path.push_back(v);
     });
     REQUIRE(path == (path_t{"A", "B", "D", "G", "C", "E", "F"}));
 }
 
-
 TEST_CASE("Test dfs", "[dfs]") {
-    auto g = graph(edges_t{{
-        {"A", "B"},
-        {"A", "D"},
-        {"B", "C"},
-        {"B", "D"},
-        {"B", "E"},
-        {"C", "E"},
-        {"D", "E"},
-        {"D", "F"},
-        {"E", "F"},
-        {"E", "G"},
-        {"F", "G"},
-        {"A", "G"},
-    }});
-
     path_t path;
-    dfs(g, "A", [&path](const label_t& v) {
+    dfs(test_graph(), "A", [&path](const label_t& v) {
         path.push_back(v);
     });
     REQUIRE(path == (path_t{"A", "G", "D", "F", "E", "B", "C"}));
 }
 
+TEST_CASE("Test topological sort", "[topological_sort]") {
+    auto path = topological_sort(test_graph(), "A");
+    REQUIRE(path == (path_t{"G", "F", "E", "C", "D", "B", "A"}));
+}
+
+TEST_CASE("Test topological sort on a non-DAG", "[topological_sort]") {
+    auto g = graph(edges_t{{
+        {"A", "B"},
+        {"B", "C"},
+        {"C", "A"},
+    }});
+
+    REQUIRE_THROWS(topological_sort(g, "A"));
+}
 
 TEST_CASE("Test dijsktra", "[dijsktra]") {
     auto g = graph(weighted_edges_t{{
