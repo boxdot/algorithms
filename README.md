@@ -1,16 +1,8 @@
 [![Build Status](https://travis-ci.org/boxdot/algorithms.svg?branch=master)](https://travis-ci.org/boxdot/algorithms) using Clang 3.6
 
-## Next time...
-
-* Voronoi Tesselation
-* Benchmark multiplication algorithms of Karatsuba, Toom–Cook and
-  Schönhage–Strassen on 256-bit integers (char[32]).
-* Coin change problem
-* k-SUM
-* Linear embedding problem ?
-
 ## Done
 
+* (graph) dfs, bfs, topological sort, dijkstra
 * (geometric) barycentric coordinates
 * (distributed) Chandy-Lamport snapshot algorithm
 * xorshift64star
@@ -25,6 +17,15 @@
 * Johnson–Trotter
 * Multiset next permutation algorithm
 * Sorting (insertion sort, merge sort)
+
+## To consider
+
+* Voronoi Tesselation
+* Benchmark multiplication algorithms of Karatsuba, Toom–Cook and
+  Schönhage–Strassen on 256-bit integers (char[32]).
+* Coin change problem
+* k-SUM
+* Linear embedding problem ?
 
 ## Used libraries
 
