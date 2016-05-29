@@ -13,7 +13,7 @@ set(EXECUTABLES
     cnf
     intersection
     range_search
-    dijkstra
+    graph
 )
 
 foreach(EXEC_NAME ${EXECUTABLES})
