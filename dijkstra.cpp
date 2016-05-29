@@ -9,6 +9,9 @@
 #include <string>
 #include <vector>
 
+//
+// Graph datatypes and methods
+//
 
 using label_t = std::string;
 using path_t = std::vector<label_t>;
@@ -46,6 +49,21 @@ auto graph(const weighted_edges_t& edges) {
     return g;
 }
 
+
+auto vertices(const graph_t& g) {
+    std::set<label_t> vertices;
+    for (const auto v_adj : g) {
+        vertices.insert(v_adj.first);
+        for (const auto w : v_adj.second) {
+            vertices.insert(w);
+        }
+    }
+    return vertices;
+}
+
+//
+// Algorithms
+//
 
 template<typename Visitor>
 void bfs(const graph_t& g, const label_t& source, Visitor visit) {
@@ -88,6 +106,24 @@ void dfs(const graph_t& g, const label_t& source, Visitor visit) {
             }
         }
     }
+}
+
+
+auto connected_components(const graph_t& g) {
+    std::map<label_t, size_t> components;
+
+    size_t component_id = 0;
+    for (const auto v : vertices(g)) {
+        if (components.count(v)) {
+            continue;
+        }
+        dfs(g, v, [&components, component_id](const label_t& w) {
+            components[w] = component_id;
+        });
+        component_id += 1;
+    }
+
+    return components;
 }
 
 
@@ -181,7 +217,7 @@ std::tuple<weight_t, path_t> dijkstra(
 //
 
 auto test_graph() {
-    return graph(edges_t{{
+    return graph(edges_t{
         {"A", "B"},
         {"A", "D"},
         {"B", "C"},
@@ -194,7 +230,7 @@ auto test_graph() {
         {"E", "G"},
         {"F", "G"},
         {"A", "G"},
-    }});
+    });
 }
 
 
@@ -214,6 +250,30 @@ TEST_CASE("Test dfs", "[dfs]") {
     REQUIRE(path == (path_t{"A", "G", "D", "F", "E", "B", "C"}));
 }
 
+TEST_CASE("Test connected components of connected graph", "[dfs]") {
+    auto g = test_graph();
+    auto cc = connected_components(g);
+    REQUIRE(cc.size() == vertices(g).size());
+    auto cid = cc.begin()->second;
+    for (auto v_cid : cc) {
+        REQUIRE(v_cid.second == cid);
+    }
+}
+
+TEST_CASE("Test connected components of disconnected graph", "[dfs]") {
+    auto g = graph(edges_t{
+        {"A", "B"},
+        {"C", "D"},
+    });
+
+    auto cc = connected_components(g);
+    REQUIRE(cc.size() == vertices(g).size());
+    REQUIRE(cc["A"] == cc["B"]);
+    REQUIRE(cc["C"] == cc["D"]);
+    REQUIRE(cc["A"] != cc["C"]);
+    REQUIRE(cc["B"] != cc["D"]);
+}
+
 TEST_CASE("Test topological sort", "[topological_sort]") {
     auto path = topological_sort(test_graph(), "A");
     REQUIRE(path == (path_t{"G", "F", "E", "C", "D", "B", "A"}));
@@ -230,7 +290,7 @@ TEST_CASE("Test topological sort on a non-DAG", "[topological_sort]") {
 }
 
 TEST_CASE("Test dijsktra", "[dijsktra]") {
-    auto g = graph(weighted_edges_t{{
+    auto g = graph(weighted_edges_t{
         std::make_tuple("A", "B", 7),
         std::make_tuple("A", "D", 5),
         std::make_tuple("B", "C", 8),
@@ -243,7 +303,7 @@ TEST_CASE("Test dijsktra", "[dijsktra]") {
         std::make_tuple("E", "G", 9),
         std::make_tuple("F", "G", 11),
         std::make_tuple("A", "G", 23),
-    }});
+    });
 
     weight_t w; path_t path;
 
