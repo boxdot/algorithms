@@ -50,15 +50,49 @@ auto graph(const weighted_edges_t& edges) {
 }
 
 
+auto subgraph(const graph_t& g, const std::set<label_t>& vertices) {
+    graph_t h;
+    for (const auto& v_adj : g) {
+        const auto& v = v_adj.first;
+        const auto& adj = v_adj.second;
+        for (const auto& w : adj) {
+            if (vertices.count(v)) {
+                if (vertices.count(w)) {
+                    h[v].push_back(w);
+                } else {
+                    h[v].reserve(1);
+                }
+            } else if (vertices.count(w)) {
+                h[w].reserve(1);
+            }
+        }
+    }
+    return h;
+}
+
+
 auto vertices(const graph_t& g) {
     std::set<label_t> vertices;
-    for (const auto v_adj : g) {
+    for (const auto& v_adj : g) {
         vertices.insert(v_adj.first);
-        for (const auto w : v_adj.second) {
+        for (const auto& w : v_adj.second) {
             vertices.insert(w);
         }
     }
     return vertices;
+}
+
+auto components(const std::map<label_t, size_t>& components_map) {
+    std::vector<std::set<label_t>> components;
+    for (const auto& v_cid : components_map) {
+        const auto& v = v_cid.first;
+        auto cid = v_cid.second;
+        if (cid >= components.size()){
+            components.resize(cid + 1);
+        }
+        components[cid].insert(v);
+    }
+    return components;
 }
 
 //
@@ -113,7 +147,7 @@ auto connected_components(const graph_t& g) {
     std::map<label_t, size_t> components;
 
     size_t component_id = 0;
-    for (const auto v : vertices(g)) {
+    for (const auto& v : vertices(g)) {
         if (components.count(v)) {
             continue;
         }
@@ -121,6 +155,60 @@ auto connected_components(const graph_t& g) {
             components[w] = component_id;
         });
         component_id += 1;
+    }
+
+    return components;
+}
+
+//
+// Path-based strongly component algorithm
+//
+// Cf. Dijkstra, Edsger (1976)
+// A Discipline of Programming, NJ: Prentice Hall, Ch. 25.
+//
+auto strongly_connected_components(const graph_t& g) {
+    size_t component_id = 0;
+    std::map<label_t, size_t> components;
+
+    size_t counter = 0;
+    std::map<label_t, size_t> preorder;
+    std::stack<label_t> S, P;
+
+    auto visit = y_combinator([&](auto visit, const label_t& v) -> void {
+        preorder[v] = counter++;
+        S.push(v);
+        P.push(v);
+
+        auto vit = g.find(v);
+        if (vit != g.end()) {
+            for (const auto& w : vit->second) {
+                if (!preorder.count(w)) {
+                    visit(w);
+                } else if (!components.count(w)) {
+                    while (preorder[P.top()] > preorder[w]) {
+                        P.pop();
+                    }
+                }
+            }
+        }
+
+        if (P.top() == v) {
+            while (S.top() != v) {
+                components[S.top()] = component_id;
+                S.pop();
+            }
+            components[v] = component_id;
+
+            S.pop();
+            P.pop();
+            component_id += 1;
+        }
+    });
+
+    for (const auto& v : vertices(g)) {
+        if (!preorder.count(v)) {
+            visit(v);
+        }
     }
 
     return components;
@@ -151,7 +239,7 @@ path_t topological_sort(const graph_t& g, const label_t& source) {
             marks[v] = MARK::TEMPORARY;
             auto vit = g.find(v);
             if (vit != g.end()) {
-                for (const auto w : vit->second) {
+                for (const auto& w : vit->second) {
                     visit(w);
                 }
             }
@@ -210,7 +298,6 @@ std::tuple<weight_t, path_t> dijkstra(
     }
     return std::make_tuple(0, path_t{});
 }
-
 
 //
 // Tests
@@ -272,6 +359,39 @@ TEST_CASE("Test connected components of disconnected graph", "[dfs]") {
     REQUIRE(cc["C"] == cc["D"]);
     REQUIRE(cc["A"] != cc["C"]);
     REQUIRE(cc["B"] != cc["D"]);
+}
+
+TEST_CASE(
+    "Test strongly connected components on a totally strongly disconnected graph",
+    "[strongly_connected_components]")
+{
+    auto scc = strongly_connected_components(test_graph());
+    REQUIRE(components(scc).size() == 7);
+}
+
+TEST_CASE(
+    "Test strongly connected components", "[strongly_connected_components]")
+{
+    auto g = graph(edges_t{
+        {"0", "1"}, {"0", "5"},
+        {"2", "0"}, {"2", "3"},
+        {"3", "2"}, {"3", "5"},
+        {"4", "2"}, {"4", "3"},
+        {"5", "4"},
+        {"6", "0"}, {"6", "4"}, {"6", "9"},
+        {"7", "6"}, {"7", "8"},
+        {"8", "7"}, {"8", "9"},
+        {"9", "10"}, {"9", "11"},
+        {"10", "12"},
+        {"11", "4"}, {"11", "12"},
+        {"12", "9"},
+    });
+    auto scc = components(strongly_connected_components(g));
+    REQUIRE(scc.size() == 5);
+    for (const auto& comp : scc) {
+        auto h = subgraph(g, comp);
+        REQUIRE(components(strongly_connected_components(h)).size() == 1);
+    }
 }
 
 TEST_CASE("Test topological sort", "[topological_sort]") {
