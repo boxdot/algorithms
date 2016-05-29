@@ -2,7 +2,8 @@
 
 ## Done
 
-* (graph) dfs, bfs, topological sort, dijkstra
+* (graph) dfs, bfs, topological sort, dijkstra, connected components, strongly
+  connected components (path-based approach by Dijkstra)
 * (geometric) barycentric coordinates
 * (distributed) Chandy-Lamport snapshot algorithm
 * xorshift64star
